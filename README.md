@@ -6,6 +6,7 @@ If you would like to use this widget you will need to go trough a quick setup on
 
 ## How does it work?
 Once initialized, this is what happens under the hood
+
 1. Query the [auth0 API](https://auth0.com/docs/api/v2) for the details of a user and parse the `user_metadata` object in the response. 
 2. Extract metadata for the different properties to track.
 3. Search the DOM for a `form` element with class `user-metadata-form` and bind to it's `submit` event.

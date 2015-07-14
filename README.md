@@ -9,7 +9,7 @@ Once initialized, this is what happens under the hood
 
 1. Query the [auth0 API](https://auth0.com/docs/api/v2) for the details of a user and parse the `user_metadata` object in the response. 
 2. Extract metadata for the different properties to track.
-3. Search the DOM for a `form` element with class `user-metadata-form` and bind to it's `submit` event.
+3. Search the DOM for a `form` element with data attribute `data-user-editing-form` and bind to it's `submit` event.
 4. For each field specified in the server response, look inside the form for a matching input field and populate it.
 5. On form submit, grab the value of the tracked input fields and send it back to the server.
 
@@ -23,17 +23,17 @@ Once initialized, this is what happens under the hood
 <script type="text/javascript" src="fwd.link/profile-widget.js"></script>
 ```
 
-2. Create a form with class `user-metadata-form` for editing the user profile. 
-3. For each field add the attribute `data-user-property` with the corresponding value defined on the `user_metadata` field.
-4. Add a button with `type=submit`.
+2. Create a form with an attribue `data-user-editing-form` for editing the user profile. 
+3. For each field add the attribute `name` with the corresponding key defined on the `user_metadata` object. Alternatively, you can specify a `data-auth0-profile` attribute for the same purpose.
+5. Add a button with `type=submit`.
 
 ``` HTML
-<form class="user-metadata-form">
+<form data-user-editing-form>
   First name:<br>
-  <input type="text" data-user-property="firstname">
+  <input type="text" name="firstname">
   <br>
   Last name:<br>
-  <input type="text" data-user-property="lastname">
+  <input type="text" name="surname" data-auth0-profile="lastname">
   <br>
   <button type="submit">Submit</button>
 </form>
@@ -56,20 +56,10 @@ var profile = new ProfileWidget(authToken, userId, function (error) {
 That's it! The widget is now functional! 
 
 ### Dashboard
-The  `user_metadata` object serves two purposes, it holds the user information and it describes it in a meaningful way we can use to render a form for it.
-
-You will need to define the metadata for the widget's form in the `user_metadata` object. This object will describe each field and its mapping to the underlying property.
+The  `user_metadata` object serves as a backing field to where the user information will be stored. Here you can define the fields that are going to be open for modification.
 
 ````
 "user_metadata" {
-  fields: [{
-      "key": "name",                // Name of the backing property on the user_metadata object
-      "fieldKey": "name"            // Value of the data-user-property to map to this field
-    }, ... , {
-      "key": "lastName",
-      "fieldKey": "lastName"
-    }
-  ],
   "name": "Anna",
   ...,
   "lastName": "Richards"

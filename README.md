@@ -4,38 +4,52 @@ A widget to update the `user_metadata` field of a user entity. This widget assum
 
 If you would like to use this widget you will need to go trough a quick setup on both your dashboard and code. Below, the details.
 
-## How this works?
-The widget will query the [auth0 API](https://auth0.com/docs/api/v2) for the details of a user and parse the `user_metadata` object in the response. From this object the widget will acquire metadata for each field we want to modify and will create a form for such purpose. The results of this form will also be stored on the `user_metadata` field.
+## How does it work?
+Once initialized, this is what happens under the hood
+1. Query the [auth0 API](https://auth0.com/docs/api/v2) for the details of a user and parse the `user_metadata` object in the response. 
+2. Extract metadata for the different properties to track.
+3. Search the DOM for a `form` element with class `user-metadata-form` and bind to it's `submit` event.
+4. For each field specified in the server response, look inside the form for a matching input field and populate it.
+5. On form submit, grab the value of the tracked input fields and send it back to the server.
 
 ## Usage
 ### Code
+#### HTML
 
-Add the profile-widget script to your HTML. You can choose the minified version (comming soon!) or the commented version.
+1. Add the profile-widget script to your HTML.
 
 ``` HTML
 <script type="text/javascript" src="fwd.link/profile-widget.js"></script>
 ```
 
-In your code, initialize a new instance of the `ProfileWidget` by passing the authZ token and the user id and (optionally) an error callback which will be call on any error. 
+2. Create a form with class `user-metadata-form` for editing the user profile. 
+3. For each field add the attribute `data-user-property` with the corresponding value defined on the `user_metadata` field.
+4. Add a button with `type=submit`.
 
-> *Note:* You can get more information on how to aquire a user token by browsing the [auth0 docs](https://auth0.com/docs)
+``` HTML
+<form class="user-metadata-form">
+  First name:<br>
+  <input type="text" data-user-property="firstname">
+  <br>
+  Last name:<br>
+  <input type="text" data-user-property="lastname">
+  <br>
+  <button type="submit">Submit</button>
+</form>
+```
+
+#### JavaScript
+
+1. Initialize a new instance of the `ProfileWidget` with a valid token and userId.
+
+> *Note:* You can get more information on how to aquire a user token and id by browsing the [auth0 docs](https://auth0.com/docs)
 
 ``` JS
 // Instantiate the widget with the token and user id
-var profile = new ProfileWidget(token, userId, function (error) {
-  console.error(error.code);
-  console.error(error.msg);
-});
+var profile = new ProfileWidget(authToken, userId);
 ```
 
-Once initialized, you will need to tell the widget where it should append to the DOM. You can do this with the `render` function passing a selector as a parameter.
-
-``` JS
-// Render the profile widget at the target location.
-profile.render("#el");
-```
-
-You are all set! The widget will render itself at the target location!
+That's it! The widget is now functional! 
 
 ### Dashboard
 The  `user_metadata` object serves two purposes, it holds the user information and it describes it in a meaningful way we can use to render a form for it.
@@ -45,57 +59,23 @@ You will need to define the metadata for the widget's form in the `user_metadata
 ````
 "user_metadata" {
   fields: [{
-      "key": "name",                // Property name to map to
-      "label": "Name",              // Form Label
-      "type": "input",              // Type of field
-      "required": true              // Is this field mandatory?
+      "key": "name",                // Name of the backing property on the user_metadata object
+      "fieldKey": "name"            // Value of the data-user-property to map to this field
     }, ... , {
-      "key": "sex",
-      "label": "Sex",
-      "type": "select",
-      "options": [{ 
-          "key": "Male", 
-          "value": "male"
-        }, {
-          "key": "Female",
-          "value": "female",
-        }, {
-          "key": "N/A",
-          "value": "na"
-        }],
-      "required": true
+      "key": "lastName",
+      "fieldKey": "lastName"
     }
   ],
   "name": "Anna",
   ...,
-  "sex": "female"
+  "lastName": "Richards"
 }
 ```
 
-#### Available field types
-At this point we support the following field types
-* Input - Classic user input
-* Select - Dropdown with multiple options
+## Limitations
+At this time the widget only supports `input` fields of `type=text`.
 
-We will be adding more types as we continue working on this project
-
-##### Select Field
-If a field is described with `type: select` we will expect to find at the same level an `options` property with an array of valid options. Options objects are expected to have a `key` field (value to be rendered) and a `value` field with the underlaying value.
-
-Options with missing `key`/`value` information will be ignored.
-Select fields with empty `options` will be ignored.
-
-### Validations
-At this point we support the following field validations
-* required (bool) - Mark the field as mandatory
-
-All validations are optional.
-
-We will be adding more types as we continue working on this project.
-
-## Out of scope - Things for the future
-* Ability of toggling which fields should be rendered
-* Testing (lots of!)
-* Extra field types (radio, radio groups, multi-select, etc)
-* Custom Validations
-* Further error handling
+## Comming up
+* Tests
+* More Examples
+* Minified sources

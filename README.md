@@ -24,7 +24,7 @@ Once initialized, this is what happens under the hood
 ```
 
 2. Create a form with an attribue `data-user-editing-form` for editing the user profile. 
-3. For each field add the attribute `name` with the corresponding key defined on the `user_metadata` object. Alternatively, you can specify a `data-auth0-profile` attribute for the same purpose.
+3. For each field add the attribute `name` with the corresponding key defined on the `user_metadata` object. Alternatively, you can specify a `data-user-property` attribute for the same purpose.
 5. Add a button with `type=submit`.
 
 ``` HTML
@@ -33,7 +33,7 @@ Once initialized, this is what happens under the hood
   <input type="text" name="firstname">
   <br>
   Last name:<br>
-  <input type="text" name="surname" data-auth0-profile="lastname">
+  <input type="text" name="surname" data-user-property="lastname">
   <br>
   <button type="submit">Submit</button>
 </form>

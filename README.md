@@ -40,13 +40,16 @@ Once initialized, this is what happens under the hood
 
 #### JavaScript
 
-1. Initialize a new instance of the `ProfileWidget` with a valid token and userId.
+1. Initialize a new instance of the `ProfileWidget` with a valid token and userId. Optionally you can specify an error callback.
 
 > *Note:* You can get more information on how to aquire a user token and id by browsing the [auth0 docs](https://auth0.com/docs)
 
 ``` JS
 // Instantiate the widget with the token and user id
-var profile = new ProfileWidget(authToken, userId);
+var profile = new ProfileWidget(authToken, userId, function (error) {
+  console.log(error.code);
+  console.log(error.msg);
+});
 ```
 
 That's it! The widget is now functional! 

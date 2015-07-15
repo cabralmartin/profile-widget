@@ -66,9 +66,6 @@ The  `user_metadata` object serves as a backing field to where the user informat
 }
 ```
 
-## Limitations
-At this time the widget only supports `input` fields of `type=text`.
-
 ## Comming up
 * Tests
 * More Examples

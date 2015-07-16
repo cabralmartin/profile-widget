@@ -1,24 +1,38 @@
-var DataSource = function (authToken, userId, $) {
+var DataSource = function (authToken, userId) {
     "use strict"
-    
+
     // TODO: Extract to cfg file
-    var apiBaseUri = 'https://mysampleapp.auth0.com/api/v2/users/';
+    this.apiBaseUri = 'https://mysampleapp.auth0.com/api/v2/users/' + userId;
 
-    this.getUserProfileByToken = function (callback, errorCallback) {
-        console.log('fetching user')
-        $.ajax({
-            url: apiBaseUri + userId,
-            headers: {"Authorization": "Bearer " + authToken},
-            type: 'GET',
-        }).done(callback).fail(errorCallback);
+    this.authHeader = 'Bearer ' + authToken;
+};
+
+DataSource.prototype.queryServerSecure = function (method, url, callback, errorCallback, data) {
+    var request = new XMLHttpRequest();
+
+    request.open(method, url, true);
+    request.setRequestHeader("Authorization", this.authHeader);
+    request.setRequestHeader('Content-type','application/json; charset=utf-8');
+
+    request.onreadystatechange = function () {
+        if (request.readyState === 4) {
+            if (request.status === 200) {
+                if (callback) {
+                    callback(JSON.parse(request.responseText));
+                }
+            } else  if (errorCallback) {
+                errorCallback({ code: 1, msg: 'Comm Error'});
+            }
+        }
     };
 
-    this.submitUserProfile = function (payload, callback, errorCallback) {
-        $.ajax({
-            url: apiBaseUri + userId,
-            data: payload,
-            headers: {"Authorization": "Bearer " + authToken},
-            type: 'PATCH',
-        }).done(callback).fail(errorCallback);
-    };
+    request.send(JSON.stringify(data));
+};
+
+DataSource.prototype.getUserProfile = function (callback, errorCallback) {
+    this.queryServerSecure('GET', this.apiBaseUri, callback, errorCallback);
+};
+
+DataSource.prototype.submitUserProfile = function (payload, callback, errorCallback) {
+    this.queryServerSecure('PATCH', this.apiBaseUri, callback, errorCallback, payload);
 };

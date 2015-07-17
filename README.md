@@ -57,7 +57,7 @@ var profileWidget = new ProfileWidget(authToken, userId, function (error) {
 2. When you are ready call the `populateForm` method. This will launch the query to the server to get back the user's information.
 
 ``` JS
-profileWidget.populateForm
+profileWidget.populateForm();
 ```
 
 That's it! The widget is now functional! 
